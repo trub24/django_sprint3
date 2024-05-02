@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from blog.models import Post, Category
 
 
-def post_object():
+def post_object(slug=None):
     posts = Post.objects.select_related(
         'location', 'category', 'author',
     ).filter(
@@ -11,6 +11,8 @@ def post_object():
         category__is_published=True,
         pub_date__lt=now(),
     )
+    if slug is not None:
+        posts = posts.filter(category__slug=slug)
     return posts
 
 
@@ -31,8 +33,8 @@ def post_detail(request, pk):
 def category_posts(request, category_slug):
     template = 'blog/category.html'
     category = get_object_or_404(Category.objects.values(
-        'title', 'description'
-    ).filter(slug=category_slug), is_published=True)
-    posts = post_object().filter(category__slug=category_slug)
+        'title', 'description', 'id'
+    ), slug=category_slug, is_published=True)
+    posts = post_object(category_slug)
     context = {'post_list': posts, 'category': category}
     return render(request, template, context)

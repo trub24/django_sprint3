@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class CoreBlogeModel(models.Model):
+class CoreBlogModel(models.Model):
     is_published = models.BooleanField(
         'Опубликовано',
         default=True,
@@ -17,7 +17,7 @@ class CoreBlogeModel(models.Model):
         abstract = True
 
 
-class Location(CoreBlogeModel):
+class Location(CoreBlogModel):
     name = models.CharField('Название места', max_length=256)
 
     class Meta:
@@ -28,7 +28,7 @@ class Location(CoreBlogeModel):
         return self.name
 
 
-class Category(CoreBlogeModel):
+class Category(CoreBlogModel):
     title = models.CharField('Заголовок', max_length=256)
     description = models.TextField('Описание')
     slug = models.SlugField(
@@ -46,8 +46,9 @@ class Category(CoreBlogeModel):
         return self.title
 
 
-class Post(CoreBlogeModel):
+class Post(CoreBlogModel):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='posts',
                                verbose_name='Автор публикации')
     title = models.CharField('Заголовок', max_length=256)
     text = models.TextField('Текст')
@@ -56,11 +57,13 @@ class Post(CoreBlogeModel):
         help_text=('Если установить дату и время в '
                    'будущем — можно делать отложенные публикации.')
     )
-    location = models.ForeignKey(Location, null=True,
+    location = models.ForeignKey(Location, null=True, blank=True,
                                  on_delete=models.SET_NULL,
+                                 related_name='post_location',
                                  verbose_name='Местоположение')
     category = models.ForeignKey(Category, null=True,
                                  on_delete=models.SET_NULL,
+                                 related_name='posts_in_category',
                                  verbose_name='Категория')
 
     class Meta:

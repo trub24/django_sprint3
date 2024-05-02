@@ -5,7 +5,8 @@ from blog.models import Category, Location, Post
 admin.site.empty_value_display = 'Не задано'
 
 
-class BlogPostAdmin(admin.ModelAdmin):
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
     list_display = ('author', 'title', 'text', 'pub_date', 'location',
                     'category', 'is_published', 'created_at')
     list_editable = ('category', 'is_published', 'location',)
@@ -14,17 +15,14 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
 
 
-class BlogCategoryAdmin(admin.ModelAdmin):
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ('title', 'description', 'slug',
                     'is_published', 'created_at')
     list_editable = ('description', 'is_published',)
 
 
-class BlogLocationAdmin(admin.ModelAdmin):
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_published', 'created_at')
     list_editable = ('is_published',)
-
-
-admin.site.register(Category, BlogCategoryAdmin)
-admin.site.register(Location, BlogLocationAdmin)
-admin.site.register(Post, BlogPostAdmin)
